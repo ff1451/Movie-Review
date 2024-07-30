@@ -22,4 +22,9 @@ public class Director {
     @OneToMany(mappedBy = "director")
     private List<Movie> movies;
 
+    public Director() {}
+
+    public Director(String name) {
+        this.name = name;
+    }
 }

@@ -56,4 +56,25 @@ public class Movie {
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
+
+    public Movie(){}
+
+    public Movie(String title,
+                 String synopsis,
+                 int releaseYear,
+                 String viewingAge,
+                 String language,
+                 String cast,
+                 String country,
+                 String movieTime
+                 ) {
+        this.title = title;
+        this.synopsis = synopsis;
+        this.releaseYear = releaseYear;
+        this.viewingAge = viewingAge;
+        this.language = language;
+        this.cast = cast;
+        this.country = country;
+        this.movieTime = movieTime;
+    }
 }
