@@ -1,6 +1,8 @@
 package com.ff1451.movie_review.controller;
 
 import com.ff1451.movie_review.dto.user.LoginRequest;
+import com.ff1451.movie_review.dto.user.UserCreateRequest;
+import com.ff1451.movie_review.dto.user.UserResponse;
 import com.ff1451.movie_review.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,5 +36,11 @@ public class AuthController {
         HttpServletResponse response) {
         userService.logout(request, response);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody UserCreateRequest request){
+        UserResponse response = userService.create(request);
+        return ResponseEntity.ok(response);
     }
 }

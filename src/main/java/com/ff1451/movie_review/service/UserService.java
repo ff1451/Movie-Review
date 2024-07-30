@@ -85,6 +85,9 @@ public class UserService {
             cookie.setMaxAge(1800);
             cookie.setPath("/");
             response.addCookie(cookie);
+        } else {
+            throw new RuntimeException("Invalid email or password");
+
         }
     }
 

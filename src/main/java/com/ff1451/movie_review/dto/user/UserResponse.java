@@ -8,6 +8,10 @@ public record UserResponse(
     String email
 ) {
     public static UserResponse from(User user) {
-        return new UserResponse(user.getId(), user.getName(), user.getEmail());
+        return new UserResponse(
+            user.getId(),
+            user.getName(),
+            user.getEmail()
+        );
     }
 }
