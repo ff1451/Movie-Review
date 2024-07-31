@@ -17,7 +17,7 @@ public class Review {
     private Long id;
 
     @Column(nullable = false)
-    private int rating;
+    private Float rating;
 
     @Column(nullable = false)
     private String reviewText;
@@ -38,4 +38,20 @@ public class Review {
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
+
+    public Review() {}
+
+    public Review(
+        Movie movieId,
+        User userId,
+        Float rating,
+        String reviewText
+    ) {
+        this.movie = movieId;
+        this.user = userId;
+        this.rating = rating;
+        this.reviewText = reviewText;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 }
