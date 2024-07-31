@@ -21,11 +21,11 @@ public class Comment {
     private String commentText;
 
     @Column(nullable = false)
-    @ColumnDefault("0")
-    private int depth;
+    private int depth = 0;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
@@ -38,9 +38,22 @@ public class Comment {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id2")
+    @JoinColumn(name="parent_comment_id")
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment")
     private List<Comment> childComments;
+
+    public Comment () {}
+
+    public Comment(
+        Review reviewId,
+        User userId,
+        String commentText) {
+        this.review = reviewId;
+        this.user = userId;
+        this.commentText = commentText;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 }
