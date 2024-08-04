@@ -6,6 +6,8 @@ import com.ff1451.movie_review.dto.movie.MovieUpdateRequest;
 import com.ff1451.movie_review.entity.Director;
 import com.ff1451.movie_review.entity.Genre;
 import com.ff1451.movie_review.entity.Movie;
+import com.ff1451.movie_review.exception.CustomException;
+import com.ff1451.movie_review.exception.ErrorCode;
 import com.ff1451.movie_review.repository.DirectorRepository;
 import com.ff1451.movie_review.repository.GenreRepository;
 import com.ff1451.movie_review.repository.MovieRepository;
@@ -25,7 +27,7 @@ public class MovieService {
 
     public MovieResponse getMovieById(Long id) {
         Movie movie = movieRepository.findById(id)
-            .orElseThrow(()->new RuntimeException("없음"));
+            .orElseThrow(()->new CustomException(ErrorCode.MOVIE_NOT_FOUND));
         return MovieResponse.from(movie);
     }
     public List<MovieResponse> getAllMovies() {
@@ -37,7 +39,7 @@ public class MovieService {
 
     public List<MovieResponse> getMovieByTitle(String title) {
         List<Movie> movies = movieRepository.findByTitle(title)
-            .orElseThrow(()-> new RuntimeException("없음"));
+            .orElseThrow(()-> new CustomException(ErrorCode.MOVIE_NOT_FOUND));
         return movies.stream()
             .map(MovieResponse::from)
             .toList();
@@ -45,7 +47,7 @@ public class MovieService {
 
     public List<MovieResponse> getMovieByGenre(String genre) {
         List<Movie> movies = movieRepository.findByGenre(genre)
-            .orElseThrow(()-> new RuntimeException("없음"));
+            .orElseThrow(()-> new CustomException(ErrorCode.MOVIE_NOT_FOUND));
         return movies.stream()
             .map(MovieResponse::from)
             .toList();
@@ -53,7 +55,7 @@ public class MovieService {
 
     public List<MovieResponse> getMovieByDirector(String director) {
         List<Movie> movies = movieRepository.findByDirector(director)
-            .orElseThrow(()-> new RuntimeException("없음"));
+            .orElseThrow(()-> new CustomException(ErrorCode.MOVIE_NOT_FOUND));
         return movies.stream()
             .map(MovieResponse::from)
             .toList();
@@ -61,7 +63,7 @@ public class MovieService {
 
     public List<MovieResponse> getMovieByCast(String castName) {
         List<Movie> movies = movieRepository.findByCast(castName)
-            .orElseThrow(()-> new RuntimeException("없음"));
+            .orElseThrow(()-> new CustomException(ErrorCode.MOVIE_NOT_FOUND));
         return movies.stream()
             .map(MovieResponse::from)
             .toList();
@@ -69,7 +71,7 @@ public class MovieService {
 
     public List<MovieResponse> getMovieByRatingRange(Float minRating, Float maxRating) {
         List<Movie> movies = movieRepository.findByRatingRange(minRating, maxRating)
-            .orElseThrow(()-> new RuntimeException("없음"));
+            .orElseThrow(()-> new CustomException(ErrorCode.MOVIE_NOT_FOUND));
         return movies.stream()
             .map(MovieResponse::from)
             .toList();
@@ -77,7 +79,7 @@ public class MovieService {
 
     public List<MovieResponse> getMovieByRating(Float rating) {
         List<Movie> movies = movieRepository.findByRating(rating)
-            .orElseThrow(()-> new RuntimeException("없음"));
+            .orElseThrow(()-> new CustomException(ErrorCode.MOVIE_NOT_FOUND));
         return movies.stream()
             .map(MovieResponse::from)
             .toList();
@@ -120,7 +122,7 @@ public class MovieService {
     @Transactional
     public MovieResponse updateMovie(Long id, MovieUpdateRequest request) {
         Movie movie = movieRepository.findById(id)
-            .orElseThrow(()->new RuntimeException("영화를 찾을 수 없습니다."));
+            .orElseThrow(()->new CustomException(ErrorCode.MOVIE_NOT_FOUND));
 
         request.title().ifPresent(movie::setTitle);
         request.synopsis().ifPresent(movie::setSynopsis);

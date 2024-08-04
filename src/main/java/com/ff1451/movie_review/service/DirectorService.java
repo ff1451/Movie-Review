@@ -4,6 +4,8 @@ package com.ff1451.movie_review.service;
 import com.ff1451.movie_review.dto.director.DirectorRequest;
 import com.ff1451.movie_review.dto.director.DirectorResponse;
 import com.ff1451.movie_review.entity.Director;
+import com.ff1451.movie_review.exception.CustomException;
+import com.ff1451.movie_review.exception.ErrorCode;
 import com.ff1451.movie_review.repository.DirectorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,14 +37,14 @@ public class DirectorService {
 
     public DirectorResponse getDirectorById(Long id) {
         Director director = directorRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("감독을 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.DIRECTOR_NOT_FOUND));
         return DirectorResponse.from(director);
     }
 
     @Transactional
     public DirectorResponse updateDirector(Long id, DirectorRequest request) {
         Director director = directorRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("감독을 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.DIRECTOR_NOT_FOUND));
         director.setName(request.name());
 
         Director updatedDirector = directorRepository.save(director);

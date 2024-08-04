@@ -6,6 +6,8 @@ import com.ff1451.movie_review.dto.comment.CommentResponse;
 import com.ff1451.movie_review.entity.Comment;
 import com.ff1451.movie_review.entity.Review;
 import com.ff1451.movie_review.entity.User;
+import com.ff1451.movie_review.exception.CustomException;
+import com.ff1451.movie_review.exception.ErrorCode;
 import com.ff1451.movie_review.repository.CommentRepository;
 import com.ff1451.movie_review.repository.ReviewRepository;
 import com.ff1451.movie_review.repository.UserRepository;
@@ -48,9 +50,9 @@ public class CommentService {
     @Transactional
     public CommentResponse createComment(CommentRequest request) {
         Review review = reviewRepository.findById(request.reviewId())
-            .orElseThrow(() -> new RuntimeException("review not found"));
+            .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
         User user = userRepository.findById(request.userId())
-            .orElseThrow(() -> new RuntimeException("user not found"));
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Comment comment = new Comment(
             review,
@@ -69,9 +71,14 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponse updateComment(Long id, CommentRequest request) {
+    public CommentResponse updateComment(Long id, Long userId, CommentRequest request) {
         Comment comment = commentRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("comment not found"));
+            .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_ACTION);
+        }
+
         comment.setCommentText(request.commentText());
         comment.setUpdatedAt(LocalDateTime.now());
         Comment updatedComment = commentRepository.save(comment);
@@ -79,8 +86,20 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteComment(Long id) {
-        commentRepository.deleteById(id);
+    public void deleteComment(Long id, Long userId) {
+        Comment comment = commentRepository.findById(id)
+            .orElseThrow(()-> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_ACTION);
+        }
+
+        if (comment.getChildComments().isEmpty()){
+            commentRepository.delete(comment);
+        } else{
+            comment.setCommentText("삭제된 댓글입니다.");
+            commentRepository.save(comment);
+        }
     }
 
 }

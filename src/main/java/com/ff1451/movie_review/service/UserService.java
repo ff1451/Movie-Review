@@ -2,6 +2,8 @@ package com.ff1451.movie_review.service;
 
 import com.ff1451.movie_review.dto.user.*;
 import com.ff1451.movie_review.entity.User;
+import com.ff1451.movie_review.exception.CustomException;
+import com.ff1451.movie_review.exception.ErrorCode;
 import com.ff1451.movie_review.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +25,7 @@ public class UserService {
 
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return UserResponse.from(user);
     }
 
@@ -36,7 +38,7 @@ public class UserService {
     @Transactional
     public UserResponse create(UserCreateRequest request) {
         if(userRepository.existsByEmail(request.email())){
-            throw new RuntimeException("이메일이 이미 존재합니다.");
+            throw new CustomException(ErrorCode.USER_EMAIL_EXISTENCE);
         }
         String encodedPassword = passwordEncoder.encode(request.password());
         User user = new User(request.name(),request.email(),encodedPassword);
@@ -47,7 +49,7 @@ public class UserService {
     @Transactional
     public UserResponse update(Long id, UserUpdateRequest request) {
         User user = userRepository.findById(id)
-            .orElseThrow(()-> new RuntimeException("유저를 찾을 수 없습니다"));
+            .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         user.update(request.name(), request.email());
         userRepository.save(user);
@@ -57,10 +59,10 @@ public class UserService {
     @Transactional
     public UserResponse changePassword(Long id, ChangePasswordRequest request) {
         User user = userRepository.findById(id)
-            .orElseThrow(()-> new RuntimeException("유저를 찾을 수 없습니다"));
+            .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if(!passwordEncoder.matches(request.currentPassword(), user.getPassword())){
-            throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
         user.changePassword(request.currentPassword());
         userRepository.save(user);
@@ -73,7 +75,8 @@ public class UserService {
     }
 
     public void login (LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
-        User user = userRepository.findByEmail(loginRequest.email());
+        User user = userRepository.findByEmail(loginRequest.email())
+            .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if(user != null && passwordEncoder.matches(loginRequest.password(), user.getPassword())){
             UserResponse userResponse = UserResponse.from(user);
@@ -81,13 +84,12 @@ public class UserService {
             session.setAttribute("user", userResponse);
             session.setMaxInactiveInterval(1800);
 
-            Cookie cookie = new Cookie("JSESSIOND", session.getId());
+            Cookie cookie = new Cookie("JSESSIONID", session.getId());
             cookie.setMaxAge(1800);
             cookie.setPath("/");
             response.addCookie(cookie);
         } else {
-            throw new RuntimeException("Invalid email or password");
-
+            throw new CustomException(ErrorCode.WRONG_PASSWORD_EMAIL);
         }
     }
 

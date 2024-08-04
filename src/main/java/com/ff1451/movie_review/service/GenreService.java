@@ -3,6 +3,8 @@ package com.ff1451.movie_review.service;
 import com.ff1451.movie_review.dto.genre.GenreRequest;
 import com.ff1451.movie_review.dto.genre.GenreResponse;
 import com.ff1451.movie_review.entity.Genre;
+import com.ff1451.movie_review.exception.CustomException;
+import com.ff1451.movie_review.exception.ErrorCode;
 import com.ff1451.movie_review.repository.GenreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,7 +37,7 @@ public class GenreService {
     @Transactional
     public GenreResponse updateGenre (Long id, GenreRequest request) {
         Genre genre = genreRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Genre not found"));
+            .orElseThrow(() -> new CustomException(ErrorCode.GENRE_NOT_FOUND));
         genre.setGenreName(request.genreName());
         Genre updatedGenre = genreRepository.save(genre);
         return GenreResponse.from(updatedGenre);
