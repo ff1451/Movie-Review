@@ -6,9 +6,7 @@ import com.ff1451.movie_review.exception.CustomException;
 import com.ff1451.movie_review.exception.ErrorCode;
 import com.ff1451.movie_review.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -64,7 +62,7 @@ public class UserService {
         if(!passwordEncoder.matches(request.currentPassword(), user.getPassword())){
             throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
-        user.changePassword(request.currentPassword());
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
         return UserResponse.from(user);
     }
@@ -74,7 +72,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public void login (LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
+    public void login (LoginRequest loginRequest, HttpServletRequest request) {
         User user = userRepository.findByEmail(loginRequest.email())
             .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -83,26 +81,16 @@ public class UserService {
             HttpSession session = request.getSession();
             session.setAttribute("user", userResponse);
             session.setMaxInactiveInterval(1800);
-
-            Cookie cookie = new Cookie("JSESSIONID", session.getId());
-            cookie.setMaxAge(1800);
-            cookie.setPath("/");
-            response.addCookie(cookie);
         } else {
             throw new CustomException(ErrorCode.WRONG_PASSWORD_EMAIL);
         }
     }
 
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    public void logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
-
-        Cookie cookie = new Cookie("JSESSIONID", null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        response.addCookie(cookie);
     }
 
 

@@ -5,7 +5,6 @@ import com.ff1451.movie_review.dto.user.UserCreateRequest;
 import com.ff1451.movie_review.dto.user.UserResponse;
 import com.ff1451.movie_review.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,18 +22,17 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(
         @Valid @RequestBody LoginRequest loginRequest,
-        HttpServletResponse response,
         HttpServletRequest request
     ) {
-        userService.login(loginRequest, request, response);
+        userService.login(loginRequest, request);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-        HttpServletRequest request,
-        HttpServletResponse response) {
-        userService.logout(request, response);
+        HttpServletRequest request
+    ) {
+        userService.logout(request);
         return ResponseEntity.noContent().build();
     }
 
