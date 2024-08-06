@@ -22,13 +22,13 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         UserResponse response = userService.getUserById(id);
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/id/{id}")
     public ResponseEntity<UserResponse> updateUser(
         @PathVariable Long id,
         @RequestBody UserUpdateRequest request) {
@@ -36,7 +36,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}/change-password")
+    @PutMapping("/change-password/{id}")
     public ResponseEntity<UserResponse> changePassword(
         @PathVariable Long id,
         @RequestBody ChangePasswordRequest request) {
@@ -44,7 +44,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<UserResponse> deleteUser(@PathVariable Long id){
         userService.delete(id);
         return ResponseEntity.noContent().build();
