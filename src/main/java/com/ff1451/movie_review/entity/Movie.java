@@ -15,6 +15,9 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
+    private String movieCode;
+
     @Column(nullable = false)
     private String title;
 
@@ -73,6 +76,25 @@ public class Movie {
         this.releaseYear = releaseYear;
         this.viewingAge = viewingAge;
         this.language = language;
+        this.cast = cast;
+        this.country = country;
+        this.movieTime = movieTime;
+    }
+
+    public Movie(String movieCode,
+                 String title,
+                 int releaseYear,
+                 String viewingAge,
+                 String cast,
+                 String country,
+                 String movieTime
+    ) {
+        this.movieCode = movieCode;
+        this.title = title;
+        this.synopsis = "N/A";
+        this.releaseYear = releaseYear;
+        this.viewingAge = viewingAge;
+        this.language = "N/A";
         this.cast = cast;
         this.country = country;
         this.movieTime = movieTime;

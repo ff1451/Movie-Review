@@ -1,7 +1,6 @@
 package com.ff1451.movie_review.repository;
 
 import com.ff1451.movie_review.entity.Movie;
-import org.apache.logging.log4j.util.Cast;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,4 +24,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     Optional<List<Movie>> findByRatingRange(@Param("minRating") Float minRating, @Param("maxRating") Float maxRating);
 
     Optional<List<Movie>> findByRating(Float rating);
+
+    Optional<Movie> findByMovieCode(String movieCd);
 }
