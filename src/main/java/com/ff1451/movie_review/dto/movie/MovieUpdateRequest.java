@@ -6,7 +6,7 @@ import java.util.Optional;
 public record MovieUpdateRequest(
     Optional<String> title,
     Optional<String> synopsis,
-    Optional<Integer> releaseYear,
+    Optional<String> releaseYear,
     Optional<String> viewingAge,
     Optional<String> language,
     Optional<String> cast,
