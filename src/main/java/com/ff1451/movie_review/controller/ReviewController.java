@@ -6,6 +6,7 @@ import com.ff1451.movie_review.dto.review.ReviewUpdateRequest;
 import com.ff1451.movie_review.dto.user.UserResponse;
 import com.ff1451.movie_review.service.ReviewService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +43,7 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<ReviewResponse> addReview(HttpServletRequest httpRequest, @RequestBody ReviewRequest request) {
+    public ResponseEntity<ReviewResponse> addReview(HttpServletRequest httpRequest, @Valid @RequestBody ReviewRequest request) {
         UserResponse userResponse = (UserResponse) httpRequest.getSession().getAttribute("user");
         Long userId = userResponse.id();
         ReviewResponse response = reviewService.createReview(request, userId);
@@ -50,7 +51,7 @@ public class ReviewController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ReviewResponse> updateReview(@PathVariable Long id, HttpServletRequest httpRequest, @RequestBody ReviewUpdateRequest request) {
+    public ResponseEntity<ReviewResponse> updateReview(@PathVariable Long id, HttpServletRequest httpRequest, @Valid @RequestBody ReviewUpdateRequest request) {
         UserResponse userResponse = (UserResponse) httpRequest.getSession().getAttribute("user");
         Long userId = userResponse.id();
         ReviewResponse response = reviewService.updateReview(id, userId, request);

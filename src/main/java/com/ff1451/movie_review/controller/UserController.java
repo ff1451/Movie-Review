@@ -4,6 +4,7 @@ import com.ff1451.movie_review.dto.user.ChangePasswordRequest;
 import com.ff1451.movie_review.dto.user.UserResponse;
 import com.ff1451.movie_review.dto.user.UserUpdateRequest;
 import com.ff1451.movie_review.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class UserController {
     @PutMapping("/id/{id}")
     public ResponseEntity<UserResponse> updateUser(
         @PathVariable Long id,
-        @RequestBody UserUpdateRequest request) {
+        @Valid @RequestBody UserUpdateRequest request) {
         UserResponse response = userService.update(id,request);
         return ResponseEntity.ok(response);
     }
@@ -39,7 +40,7 @@ public class UserController {
     @PutMapping("/change-password/{id}")
     public ResponseEntity<UserResponse> changePassword(
         @PathVariable Long id,
-        @RequestBody ChangePasswordRequest request) {
+        @Valid @RequestBody ChangePasswordRequest request) {
         UserResponse response = userService.changePassword(id,request);
         return ResponseEntity.ok(response);
     }

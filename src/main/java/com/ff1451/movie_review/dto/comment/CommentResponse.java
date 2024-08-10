@@ -24,7 +24,7 @@ public record CommentResponse(
             comment.getCreatedAt(),
             comment.getUpdatedAt(),
             comment.getReview().getId(),
-            comment.getUser().getId() != null ? comment.getUser().getId() : null,
+            comment.getUser().getId(),
             comment.getChildComments().stream()
                 .map(CommentResponse::from)
                 .toList()

@@ -3,6 +3,7 @@ package com.ff1451.movie_review.controller;
 import com.ff1451.movie_review.dto.genre.GenreRequest;
 import com.ff1451.movie_review.dto.genre.GenreResponse;
 import com.ff1451.movie_review.service.GenreService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,13 +23,13 @@ public class GenreController {
     }
 
     @PostMapping
-    public ResponseEntity<GenreResponse> addGenre(@RequestBody GenreRequest request) {
+    public ResponseEntity<GenreResponse> addGenre(@Valid  @RequestBody GenreRequest request) {
         GenreResponse response = genreService.createGenre(request);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GenreResponse> updateGenre(@PathVariable Long id, @RequestBody GenreRequest request) {
+    public ResponseEntity<GenreResponse> updateGenre(@PathVariable Long id, @Valid @RequestBody GenreRequest request) {
         GenreResponse response = genreService.updateGenre(id, request);
         return ResponseEntity.ok(response);
     }

@@ -7,6 +7,7 @@ import com.ff1451.movie_review.dto.comment.CommentUpdateRequest;
 import com.ff1451.movie_review.dto.user.UserResponse;
 import com.ff1451.movie_review.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,7 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<CommentResponse> addComment(HttpServletRequest httpRequest, @RequestBody CommentRequest request) {
+    public ResponseEntity<CommentResponse> addComment(HttpServletRequest httpRequest, @Valid @RequestBody CommentRequest request) {
         UserResponse userResponse = (UserResponse) httpRequest.getSession().getAttribute("user");
         Long userId = userResponse.id();
         CommentResponse response = commentService.createComment(userId, request);
@@ -46,7 +47,7 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long id, HttpServletRequest httpRequest, @RequestBody CommentUpdateRequest request) {
+    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long id, HttpServletRequest httpRequest, @Valid @RequestBody CommentUpdateRequest request) {
         UserResponse userResponse = (UserResponse) httpRequest.getSession().getAttribute("user");
         Long userId = userResponse.id();
         CommentResponse response = commentService.updateComment(id, userId, request);

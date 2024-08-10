@@ -14,7 +14,7 @@ public enum ErrorCode {
     WRONG_PASSWORD_EMAIL(400, "BAD REQUEST", "이메일 혹은 비밀번호가 일치하지 않습니다."),
 
     MOVIE_NOT_FOUND(404,"NOT FOUND", "해당 영화를 찾을 수 없습니다."),
-    MOVIE_HAS_REVIEW(400, "BAD REQUEST", "영화에 작성된 리뷰가 존재합니다."),
+    //MOVIE_HAS_REVIEW(400, "BAD REQUEST", "영화에 작성된 리뷰가 존재합니다."),
     INVALID_MOVIE(400, "BAD REQUEST", "존재하지 않는 영화를 참조하고 있습니다."),
 
     DIRECTOR_NOT_FOUND(404,"NOT FOUND", "해당 감독을 찾을 수 없습니다."),
