@@ -54,17 +54,21 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponse createReview(ReviewRequest request) {
+    public ReviewResponse createReview(ReviewRequest request, Long userId) {
         Movie movie = movieRepository.findById(request.movieId())
             .orElseThrow(()-> new CustomException(ErrorCode.MOVIE_NOT_FOUND));
 
-        User user = userRepository.findById(request.userId())
+        User user = userRepository.findById(userId)
             .orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        reviewRepository.findByMovieIdAndUserId(request.movieId(),request.userId())
+        reviewRepository.findByMovieIdAndUserId(request.movieId(),userId)
             .ifPresent(review -> {
                 throw new CustomException(ErrorCode.REVIEW_EXIST);
             });
+
+        if (request.rating() < 0 || request.rating() > 5) {
+            throw new CustomException(ErrorCode.INVALID_RATING);
+        }
 
         Review review = new Review(
             movie,
@@ -72,9 +76,9 @@ public class ReviewService {
             request.rating(),
             request.reviewText());
 
+        Review savedReview = reviewRepository.save(review);
         updateMovieRating(movie.getId());
 
-        Review savedReview = reviewRepository.save(review);
         return ReviewResponse.from(savedReview);
     }
 
@@ -87,12 +91,19 @@ public class ReviewService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACTION);
         }
 
+        request.rating().ifPresent(rating -> {
+            if (rating < 0 || rating > 5) {
+                throw new CustomException(ErrorCode.INVALID_RATING);
+            }
+            review.setRating(rating);
+        });
+
         request.rating().ifPresent(review::setRating);
         request.reviewText().ifPresent(review::setReviewText);
 
+        Review savedReview = reviewRepository.save(review);
         updateMovieRating(review.getMovie().getId());
 
-        Review savedReview = reviewRepository.save(review);
         return ReviewResponse.from(savedReview);
     }
 

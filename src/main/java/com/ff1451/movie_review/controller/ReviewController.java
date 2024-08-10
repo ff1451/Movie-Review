@@ -3,7 +3,9 @@ package com.ff1451.movie_review.controller;
 import com.ff1451.movie_review.dto.review.ReviewRequest;
 import com.ff1451.movie_review.dto.review.ReviewResponse;
 import com.ff1451.movie_review.dto.review.ReviewUpdateRequest;
+import com.ff1451.movie_review.dto.user.UserResponse;
 import com.ff1451.movie_review.service.ReviewService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,19 +42,25 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<ReviewResponse> addReview(@RequestBody ReviewRequest request) {
-        ReviewResponse response = reviewService.createReview(request);
+    public ResponseEntity<ReviewResponse> addReview(HttpServletRequest httpRequest, @RequestBody ReviewRequest request) {
+        UserResponse userResponse = (UserResponse) httpRequest.getSession().getAttribute("user");
+        Long userId = userResponse.id();
+        ReviewResponse response = reviewService.createReview(request, userId);
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ReviewResponse> updateReview(@PathVariable Long id, @RequestParam Long userId, @RequestBody ReviewUpdateRequest request) {
+    public ResponseEntity<ReviewResponse> updateReview(@PathVariable Long id, HttpServletRequest httpRequest, @RequestBody ReviewUpdateRequest request) {
+        UserResponse userResponse = (UserResponse) httpRequest.getSession().getAttribute("user");
+        Long userId = userResponse.id();
         ReviewResponse response = reviewService.updateReview(id, userId, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReview(@PathVariable Long id, @RequestParam Long userId) {
+    public ResponseEntity<Void> deleteReview(@PathVariable Long id, HttpServletRequest httpRequest) {
+        UserResponse userResponse = (UserResponse) httpRequest.getSession().getAttribute("user");
+        Long userId = userResponse.id();
         reviewService.deleteReview(id, userId);
         return ResponseEntity.noContent().build();
     }

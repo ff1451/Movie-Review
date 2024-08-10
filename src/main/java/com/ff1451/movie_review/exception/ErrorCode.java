@@ -25,6 +25,7 @@ public enum ErrorCode {
 
     REVIEW_NOT_FOUND(404, "NOT FOUND", "해당 리뷰를 찾을 수 없습니다."),
     REVIEW_EXIST(409,"CONFLICT","사용자가 해당 영화에 대해 작성한 리뷰가 존재합니다."),
+    INVALID_RATING(400, "BAD REQUEST", "평점은 0 이상 5 이하이어야 합니다."),
 
     COMMENT_NOT_FOUND(404, "NOT FOUND", "해당 댓글를 찾을 수 없습니다."),
 
