@@ -3,7 +3,10 @@ package com.ff1451.movie_review.controller;
 
 import com.ff1451.movie_review.dto.comment.CommentRequest;
 import com.ff1451.movie_review.dto.comment.CommentResponse;
+import com.ff1451.movie_review.dto.comment.CommentUpdateRequest;
+import com.ff1451.movie_review.dto.user.UserResponse;
 import com.ff1451.movie_review.service.CommentService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,19 +38,25 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<CommentResponse> addComment(@RequestBody CommentRequest request) {
-        CommentResponse response = commentService.createComment(request);
+    public ResponseEntity<CommentResponse> addComment(HttpServletRequest httpRequest, @RequestBody CommentRequest request) {
+        UserResponse userResponse = (UserResponse) httpRequest.getSession().getAttribute("user");
+        Long userId = userResponse.id();
+        CommentResponse response = commentService.createComment(userId, request);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long id, @RequestParam Long userId, @RequestBody CommentRequest request) {
+    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long id, HttpServletRequest httpRequest, @RequestBody CommentUpdateRequest request) {
+        UserResponse userResponse = (UserResponse) httpRequest.getSession().getAttribute("user");
+        Long userId = userResponse.id();
         CommentResponse response = commentService.updateComment(id, userId, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id, @RequestParam Long userId) {
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id, HttpServletRequest httpRequest) {
+        UserResponse userResponse = (UserResponse) httpRequest.getSession().getAttribute("user");
+        Long userId = userResponse.id();
         commentService.deleteComment(id, userId);
         return ResponseEntity.noContent().build();
     }

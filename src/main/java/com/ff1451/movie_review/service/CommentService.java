@@ -3,6 +3,7 @@ package com.ff1451.movie_review.service;
 
 import com.ff1451.movie_review.dto.comment.CommentRequest;
 import com.ff1451.movie_review.dto.comment.CommentResponse;
+import com.ff1451.movie_review.dto.comment.CommentUpdateRequest;
 import com.ff1451.movie_review.entity.Comment;
 import com.ff1451.movie_review.entity.Review;
 import com.ff1451.movie_review.entity.User;
@@ -15,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,14 +27,14 @@ public class CommentService {
     private final UserRepository userRepository;
 
     public List<CommentResponse> getCommentByReviewId(Long reviewId) {
-        List<Comment> comments = commentRepository.findByReviewId(reviewId);
+        List<Comment> comments = commentRepository.findByReviewIdAndParentCommentIdIsNull(reviewId);
         return comments.stream()
             .map(CommentResponse::from)
             .toList();
     }
 
     public List<CommentResponse> getCommentByUserId(Long userId) {
-        List<Comment> comments = commentRepository.findByUserId(userId);
+        List<Comment> comments = commentRepository.findByUserIdAndParentCommentIdIsNull(userId);
         return comments.stream()
             .map(CommentResponse::from)
             .toList();
@@ -48,10 +48,10 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponse createComment(CommentRequest request) {
+    public CommentResponse createComment(Long userId, CommentRequest request) {
         Review review = reviewRepository.findById(request.reviewId())
             .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
-        User user = userRepository.findById(request.userId())
+        User user = userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Comment comment = new Comment(
@@ -71,7 +71,7 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponse updateComment(Long id, Long userId, CommentRequest request) {
+    public CommentResponse updateComment(Long id, Long userId, CommentUpdateRequest request) {
         Comment comment = commentRepository.findById(id)
             .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
@@ -80,7 +80,6 @@ public class CommentService {
         }
 
         comment.setCommentText(request.commentText());
-        comment.setUpdatedAt(LocalDateTime.now());
         Comment updatedComment = commentRepository.save(comment);
         return CommentResponse.from(updatedComment);
     }
