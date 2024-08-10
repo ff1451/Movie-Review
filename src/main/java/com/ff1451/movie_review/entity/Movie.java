@@ -25,7 +25,7 @@ public class Movie {
     private String synopsis;
 
     @Column(nullable = false)
-    private int releaseYear;
+    private String releaseYear;
 
     @Column(nullable = false)
     private String viewingAge;
@@ -51,7 +51,7 @@ public class Movie {
 
     @ManyToMany
     @JoinTable(
-        name = "MovieGenres",
+        name = "movie_genres",
         joinColumns = @JoinColumn(name = "movie_id"),
         inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
@@ -64,7 +64,7 @@ public class Movie {
 
     public Movie(String title,
                  String synopsis,
-                 int releaseYear,
+                 String releaseYear,
                  String viewingAge,
                  String language,
                  String cast,
@@ -83,7 +83,7 @@ public class Movie {
 
     public Movie(String movieCode,
                  String title,
-                 int releaseYear,
+                 String releaseYear,
                  String viewingAge,
                  String cast,
                  String country,

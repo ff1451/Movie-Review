@@ -11,6 +11,7 @@ import com.ff1451.movie_review.repository.GenreRepository;
 import com.ff1451.movie_review.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -25,6 +26,7 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final DirectorRepository directorRepository;
     private final GenreRepository genreRepository;
+    private final ApiPageService apiPageService;
 
     @Value("${kobis.api.key}")
     private String apiKey;
@@ -39,8 +41,9 @@ public class MovieService {
 
 
     @Transactional
+    @Scheduled(cron = "0 0 0 * * *")
     public void updateAllMovies() {
-        int curPage = 1;
+        int curPage = apiPageService.getLastPage();
         boolean hasMore = true;
 
         while (hasMore) {
@@ -58,12 +61,18 @@ public class MovieService {
             }
 
             curPage++;
-            //hasMore = !response.movieListResult().movieList().isEmpty();
-            if (curPage >= 2) {
-                hasMore = false;
-            } else {
-                hasMore = !response.movieListResult().movieList().isEmpty();
+            apiPageService.updateLastPage(curPage);
+
+            hasMore = !response.movieListResult().movieList().isEmpty();
+            if(!hasMore){
+                apiPageService.resetLastPage();
             }
+
+//            if (curPage >= 2) {
+//                hasMore = false;
+//            } else {
+//                hasMore = !response.movieListResult().movieList().isEmpty();
+//            }
         }
     }
 
@@ -102,10 +111,11 @@ public class MovieService {
             .findFirst()
             .orElse("N/A");
 
+
         Movie movie = new Movie(
             movieInfo.movieCd() != null ? movieInfo.movieCd() : "N/A",
             movieInfo.movieNm() != null ? movieInfo.movieNm() : "N/A",
-            movieInfo.prdtYear() != null ? Integer.parseInt(movieInfo.prdtYear()) : 0,
+            movieInfo.prdtYear() != null && !movieInfo.prdtYear().isEmpty() ? movieInfo.prdtYear() : "N/A",
             viewingAge,
             cast,
             country,

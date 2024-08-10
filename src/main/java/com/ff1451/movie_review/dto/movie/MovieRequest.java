@@ -5,7 +5,7 @@ import java.util.List;
 public record MovieRequest(
     String title,
     String synopsis,
-    int releaseYear,
+    String releaseYear,
     String viewingAge,
     String language,
     String cast,

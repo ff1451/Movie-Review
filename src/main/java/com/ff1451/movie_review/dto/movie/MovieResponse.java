@@ -9,7 +9,7 @@ public record MovieResponse(
     Long id,
     String title,
     String synopsis,
-    int releaseYear,
+    String releaseYear,
     String viewingAge,
     String language,
     String cast,
